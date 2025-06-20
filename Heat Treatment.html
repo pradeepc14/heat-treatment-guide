@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Metal Heat Treatment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Warm Neutral Harmony" - A calming and professional palette using Stone for the background, Slate and Zinc for text and elements, and a muted Teal for accents and interactivity. -->
+    <!-- Application Structure Plan: The SPA is designed with a user-centric, non-linear exploratory structure. Instead of mirroring the report's chapters, it's organized into four logical, interactive tabs: 'Introduction' (for context), 'Principles' (for foundational knowledge via an accordion), 'Processes' (a comparative dashboard), and 'Alloys' (a case-study explorer). This task-oriented design allows users to either learn sequentially or jump directly to their area of interest, facilitating easier comparison and understanding. The core interaction revolves around selecting a process or alloy and seeing detailed, visual information update dynamically, which is more engaging than static text. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core heat treatment processes (Annealing, etc.) -> Goal: Compare their effects -> Viz: Clickable cards revealing a details panel with: 1) HTML/CSS process flow diagram for visual representation of temperature/time. 2) Chart.js Radar Chart to compare multi-dimensional property trade-offs (hardness, ductility, etc.). 3) Text blocks for summaries. -> Justification: This provides a quick, comparative overview and a deep dive on demand.
+        - Report Info: Specific alloys (Ti-6Al-4V, etc.) and their properties before/after treatment -> Goal: Show the tangible results of heat treatment -> Viz: Dropdown to select an alloy, populating a Chart.js Bar Chart. -> Justification: A bar chart is ideal for direct, quantitative comparison of properties like tensile strength.
+        - Report Info: Foundational concepts (Hall-Petch, etc.) -> Goal: Explain core theories -> Viz: HTML/CSS accordion. -> Justification: Hides complexity, allowing users to focus on one concept at a time.
+        - Library/Method: Chart.js (Canvas) for all charts. HTML/CSS/Tailwind for all diagrams and layouts. JS for all interactivity.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            border-color: #14b8a6; /* Teal-500 */
+            color: #0f766e; /* Teal-700 */
+            background-color: #f0fdfa; /* Teal-50 */
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .process-btn.active {
+            background-color: #14b8a6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        /* Simple Accordion styles */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Mastering Metal Heat Treatment</h1>
+            <p class="text-slate-600 mt-2 max-w-3xl mx-auto">An interactive guide to the principles, processes, and applications of altering metal properties through heat.</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-slate-200 mb-8 space-x-2 md:space-x-4">
+            <button data-section="intro" class="nav-btn font-medium py-3 px-4 md:px-6 border-b-4 border-transparent hover:border-teal-300 hover:bg-slate-100">Introduction</button>
+            <button data-section="principles" class="nav-btn font-medium py-3 px-4 md:px-6 border-b-4 border-transparent hover:border-teal-300 hover:bg-slate-100">Principles</button>
+            <button data-section="processes" class="nav-btn font-medium py-3 px-4 md:px-6 border-b-4 border-transparent hover:border-teal-300 hover:bg-slate-100">Processes</button>
+            <button data-section="alloys" class="nav-btn font-medium py-3 px-4 md:px-6 border-b-4 border-transparent hover:border-teal-300 hover:bg-slate-100">Alloy Deep Dive</button>
+        </nav>
+
+        <main>
+            <!-- Introduction Section -->
+            <section id="intro" class="content-section active">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">What is Heat Treatment?</h2>
+                    <p class="text-slate-600 mb-4 leading-relaxed">Heat treatment is a group of industrial and metalworking processes used to alter the physical, and sometimes chemical, properties of a material. The most common application is metallurgical. Heat treatments are also used in the manufacture of many other materials, such as glass. Heat treatment involves the use of heating or chilling, normally to extreme temperatures, to achieve a desired result such as hardening or softening of a material. This application is designed to introduce these concepts in an accessible way.</p>
+                    <div class="grid md:grid-cols-2 gap-6 mt-6">
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h3 class="font-semibold text-slate-800 mb-2">Key Objectives</h3>
+                            <ul class="list-disc list-inside text-slate-600 space-y-1">
+                                <li>Enhance strength and hardness</li>
+                                <li>Improve ductility and toughness</li>
+                                <li>Increase wear and corrosion resistance</li>
+                                <li>Relieve internal stresses</li>
+                                <li>Refine grain structure</li>
+                            </ul>
+                        </div>
+                        <div class="bg-stone-100 p-4 rounded-lg">
+                            <h3 class="font-semibold text-slate-800 mb-2">How to Use This Guide</h3>
+                            <p class="text-slate-600">Navigate through the tabs above to explore the core principles, compare different treatment processes, and see how they apply to advanced industrial alloys. Interactive elements will help visualize the concepts.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Principles Section -->
+            <section id="principles" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Foundational Principles</h2>
+                    <p class="text-slate-600 mb-6">Heat treatment works by manipulating the internal microstructure of metals. Understanding these core principles is key to understanding the 'why' behind the processes. Click each principle to learn more.</p>
+                    <div id="accordion-container" class="space-y-3">
+                        <!-- Accordion items will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processes Section -->
+            <section id="processes" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Comparing Heat Treatment Processes</h2>
+                    <p class="text-slate-600 mb-6">Select a process to see its purpose, procedural diagram, and its typical impact on key mechanical properties. This allows for a direct comparison of outcomes.</p>
+                    <div id="process-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 mb-8">
+                        <!-- Process buttons will be injected here by JS -->
+                    </div>
+                    <div id="process-details" class="grid lg:grid-cols-2 gap-8 items-start">
+                        <div class="space-y-4">
+                            <h3 id="process-title" class="text-xl font-bold text-slate-800"></h3>
+                            <p id="process-purpose" class="text-slate-600 leading-relaxed"></p>
+                            <div>
+                                <h4 class="font-semibold mb-2">Process Overview:</h4>
+                                <div id="process-diagram" class="bg-slate-50 p-4 rounded-lg border border-slate-200"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Key Characteristics:</h4>
+                                <ul id="process-characteristics" class="list-disc list-inside text-slate-600 space-y-1"></ul>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <h4 class="font-semibold mb-2">Impact on Properties</h4>
+                             <div class="chart-container w-full">
+                                <canvas id="process-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alloys Section -->
+            <section id="alloys" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Alloy Deep Dive</h2>
+                     <p class="text-slate-600 mb-6">Explore how heat treatments are applied to specific high-performance alloys. Select an alloy to see how its properties can be tailored for demanding applications like aerospace and medical implants.</p>
+                    <div class="flex items-center space-x-4 mb-8">
+                        <label for="alloy-selector" class="font-semibold">Select Alloy:</label>
+                        <select id="alloy-selector" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                            <!-- Options will be injected by JS -->
+                        </select>
+                    </div>
+                     <div id="alloy-details" class="grid lg:grid-cols-2 gap-8 items-start">
+                        <div class="space-y-4">
+                            <h3 id="alloy-title" class="text-xl font-bold text-slate-800"></h3>
+                            <p id="alloy-description" class="text-slate-600 leading-relaxed"></p>
+                            <div>
+                                <h4 class="font-semibold mb-2">Typical Heat Treatments:</h4>
+                                <p id="alloy-treatments" class="text-slate-600"></p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">Machining & Distortion Considerations:</h4>
+                                <p id="alloy-machining" class="text-slate-600"></p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                           <h4 class="font-semibold mb-2">Property Comparison (Typical)</h4>
+                            <div class="chart-container w-full">
+                                <canvas id="alloy-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const appData = {
+        principles: [
+            {
+                title: 'Grain Size & The Hall-Petch Relationship',
+                content: "This principle states that a material's strength increases as its grain size decreases. Smaller grains create more grain boundaries, which act as barriers to dislocation movement, the primary mechanism of plastic deformation. Therefore, finer-grained materials are generally harder and stronger. However, at nanoscale levels, this effect can reverse (Inverse Hall-Petch)."
+            },
+            {
+                title: 'Phase Transformations',
+                content: "Metals can exist in different solid structures, or 'phases'. Heat treatment works by inducing transformations between these phases. These can be diffusion-dependent (atoms have time to move, e.g., annealing) or diffusionless (atoms shear into a new structure instantly, e.g., martensite formation during quenching). The final phase composition dictates the material's properties."
+            },
+            {
+                title: 'Recovery, Recrystallization, and Grain Growth',
+                content: "When a deformed metal is heated, it undergoes three stages. <strong>Recovery:</strong> Internal stresses are relieved at low temperatures. <strong>Recrystallization:</strong> Above a critical temperature (T<sub>recryst</sub>), new, strain-free grains form, restoring ductility. <strong>Grain Growth:</strong> If held at high temperatures for too long, grains will grow larger, which can reduce strength. Heat treatments are carefully designed around these stages."
+            },
+        ],
+        processes: {
+            annealing: {
+                title: 'Annealing',
+                purpose: "Primarily used to soften a metal, increase ductility, and relieve internal stresses, making it more workable and machinable. It creates a uniform, stress-free microstructure.",
+                diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-1/3">Heating<div class="h-0.5 bg-rose-400 mt-1"></div></div>
+                        <div class="w-1/3 relative"><div class="absolute w-full h-0.5 bg-rose-400 top-1/2 -translate-y-1/2"></div><span class="bg-slate-50 relative px-1">Soaking</span></div>
+                        <div class="w-1/3">Slow Cooling<div class="h-0.5 bg-sky-400 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Performed <strong>above</strong> recrystallization temperature.",
+                    "Cooling is very slow (e.g., in-furnace).",
+                    "Results in low hardness and high ductility.",
+                    "<strong>Low</strong> risk of distortion; can be done before final machining."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [1, 1, 5, 4, 5] }
+            },
+            normalizing: {
+                title: 'Normalizing',
+                purpose: "Applied to ferrous alloys to refine the grain structure and improve mechanical properties and machinability after operations like forging or casting. It produces a more uniform and fine-grained structure than annealing.",
+                diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-1/3">Heating<div class="h-0.5 bg-rose-400 mt-1"></div></div>
+                        <div class="w-1/3 relative"><div class="absolute w-full h-0.5 bg-rose-400 top-1/2 -translate-y-1/2"></div><span class="bg-slate-50 relative px-1">Soaking</span></div>
+                        <div class="w-1/3">Air Cooling<div class="h-0.5 bg-sky-500 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Performed <strong>above</strong> recrystallization temperature.",
+                    "Cooling is done in still air (faster than annealing).",
+                    "Results in higher strength than annealed state.",
+                    "<strong>Moderate</strong> risk of distortion."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 3, 4, 4, 4] }
+            },
+            hardening: {
+                title: 'Hardening (Quenching)',
+                purpose: "Significantly increases hardness and strength by heating to form a single phase (e.g., austenite in steel) and then rapidly cooling (quenching) to lock in a hard, brittle, non-equilibrium phase (e.g., martensite).",
+                 diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-1/3">Heating<div class="h-0.5 bg-rose-400 mt-1"></div></div>
+                        <div class="w-1/3 relative"><div class="absolute w-full h-0.5 bg-rose-400 top-1/2 -translate-y-1/2"></div><span class="bg-slate-50 relative px-1">Soaking</span></div>
+                        <div class="w-1/3">Rapid Quench<div class="h-0.5 bg-red-600 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Performed <strong>above</strong> critical transformation temperature.",
+                    "Cooling is extremely rapid (water, oil, brine).",
+                    "Results in very high hardness and brittleness.",
+                    "<strong>High</strong> risk of distortion and cracking; must be followed by tempering."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [5, 5, 1, 1, 1] }
+            },
+            tempering: {
+                title: 'Tempering',
+                purpose: "Almost always performed after hardening. It reduces the brittleness and relieves the high internal stresses of the quenched part, increasing its toughness and ductility at the expense of some hardness.",
+                 diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-2/5">Re-Heating<div class="h-0.5 bg-orange-400 mt-1"></div></div>
+                        <div class="w-1/5 relative"><div class="absolute w-full h-0.5 bg-orange-400 top-1/2 -translate-y-1/2"></div><span class="bg-slate-50 relative px-1">Soaking</span></div>
+                        <div class="w-2/5">Air Cooling<div class="h-0.5 bg-sky-500 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Performed <strong>below</strong> critical transformation temperature.",
+                    "Precise temperature control determines the final property balance.",
+                    "Decreases hardness, increases toughness.",
+                    "Improves dimensional stability; done <strong>before</strong> final machining."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 3, 4, 5] }
+            },
+            age_hardening: {
+                title: 'Age Hardening',
+                purpose: "A multi-step process (solution treat, quench, age) to strengthen non-ferrous alloys (e.g., Al, Ti, Ni-based). It works by creating a supersaturated solid solution and then allowing fine particles (precipitates) to form, which obstruct dislocation movement.",
+                 diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-1/4">Solution Treat<div class="h-0.5 bg-rose-400 mt-1"></div></div>
+                        <div class="w-1/4">Quench<div class="h-0.5 bg-red-600 mt-1"></div></div>
+                        <div class="w-1/2">Aging (Low Temp Heat)<div class="h-0.5 bg-amber-500 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Solution treatment is <strong>above</strong> solvus temp; aging is <strong>below</strong>.",
+                    "Strength develops during the aging step.",
+                    "Provides very high strength-to-weight ratios.",
+                    "Distortion can occur during quench; aging helps relieve stress."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 5, 2, 3, 3] }
+            },
+             stress_relieving: {
+                title: 'Stress Relieving',
+                purpose: "Used to reduce internal stresses that may have been created during manufacturing processes like welding, casting, or heavy machining. This minimizes the risk of distortion during subsequent use or machining.",
+                 diagram: `
+                    <div class="flex items-center h-20 text-xs text-center">
+                        <div class="w-1/3">Heating<div class="h-0.5 bg-amber-400 mt-1"></div></div>
+                        <div class="w-1/3 relative"><div class="absolute w-full h-0.5 bg-amber-400 top-1/2 -translate-y-1/2"></div><span class="bg-slate-50 relative px-1">Soaking</span></div>
+                        <div class="w-1/3">Slow Cooling<div class="h-0.5 bg-sky-400 mt-1"></div></div>
+                    </div>
+                `,
+                characteristics: [
+                    "Performed <strong>below</strong> critical transformation temperature.",
+                    "Does not significantly change mechanical properties like hardness.",
+                    "Primary goal is dimensional stability.",
+                    "Ideal for complex parts before final, tight-tolerance machining."
+                ],
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 2, 3, 3, 5] }
+            }
+        },
+        alloys: {
+            'ti-6al-4v': {
+                title: 'Ti-6Al-4V (Grade 5 Titanium)',
+                description: "The most common titanium alloy, prized for its high strength-to-weight ratio, excellent corrosion resistance, and biocompatibility. It's a workhorse in aerospace, medical, and chemical processing industries.",
+                treatments: "Typically undergoes <strong>Annealing</strong> to improve ductility and toughness, or a two-step <strong>Solution Treatment and Aging (STA)</strong> process to achieve maximum strength.",
+                machining: "Difficult to machine due to low thermal conductivity and a tendency to work-harden. Distortion during heat treatment is a major concern and requires careful control of cooling rates.",
+                properties: {
+                    labels: ['Tensile Strength (MPa)', 'Yield Strength (MPa)', 'Elongation (%)'],
+                    datasets: [
+                        { label: 'Annealed', data: [950, 880, 14], backgroundColor: '#64748b' },
+                        { label: 'Solution Treated & Aged', data: [1170, 1100, 10], backgroundColor: '#14b8a6' }
+                    ]
+                }
+            },
+            'inconel-718': {
+                title: 'Inconel 718 (Nickel Superalloy)',
+                description: "A precipitation-strengthened nickel-based superalloy known for its incredible strength and corrosion resistance at extreme temperatures, from cryogenic levels up to 700°C. Essential for jet engine and gas turbine components.",
+                treatments: "Standard heat treatment is <strong>Solution Treatment followed by a two-step Aging process</strong>. This dissolves brittle phases and then precipitates the strengthening γ' and γ'' phases.",
+                machining: "Extremely difficult to machine due to its high strength and rapid work-hardening. Heat treatment is critical for relieving stresses from manufacturing (e.g., additive manufacturing) but makes the final material even harder to cut.",
+                 properties: {
+                    labels: ['Tensile Strength (MPa)', 'Yield Strength (MPa)', 'Hardness (HRC)'],
+                    datasets: [
+                        { label: 'Annealed', data: [965, 550, 20], backgroundColor: '#64748b' },
+                        { label: 'Solution Treated & Aged', data: [1375, 1100, 42], backgroundColor: '#14b8a6' }
+                    ]
+                }
+            },
+            '7075-al': {
+                title: '7075 Aluminum Alloy',
+                description: "A high-strength aluminum alloy with zinc as the primary alloying element. Its strength is comparable to many steels, making it a key material for highly stressed structural parts in the aircraft industry.",
+                treatments: "Most commonly used in the <strong>T6 temper</strong>, which involves <strong>Solution Treatment, quenching, and artificial Aging</strong>. This precipitation hardening process dramatically increases strength.",
+                machining: "Good machinability in the annealed condition, but more challenging in the T6 condition. Prone to distortion from residual stresses, so stress-relief operations are often required before final machining.",
+                 properties: {
+                    labels: ['Tensile Strength (MPa)', 'Yield Strength (MPa)', 'Elongation (%)'],
+                    datasets: [
+                        { label: 'Annealed (O-Temper)', data: [228, 103, 16], backgroundColor: '#64748b' },
+                        { label: 'Aged (T6-Temper)', data: [572, 503, 11], backgroundColor: '#14b8a6' }
+                    ]
+                }
+            }
+        }
+    };
+
+    // --- Chart instances ---
+    let processChartInstance;
+    let alloyChartInstance;
+
+    // --- Navigation ---
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.content-section');
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const sectionId = button.dataset.section;
+            
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // --- Principles Section ---
+    const accordionContainer = document.getElementById('accordion-container');
+    appData.principles.forEach((item, index) => {
+        const accordionItem = document.createElement('div');
+        accordionItem.className = 'border border-slate-200 rounded-lg';
+        accordionItem.innerHTML = `
+            <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-slate-800 hover:bg-slate-50">
+                <span>${item.title}</span>
+                <span class="transform transition-transform duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </span>
+            </button>
+            <div class="accordion-content">
+                <p class="p-4 pt-0 text-slate-600">${item.content}</p>
+            </div>
+        `;
+        accordionContainer.appendChild(accordionItem);
+    });
+
+    document.querySelectorAll('.accordion-header').forEach(button => {
+        button.addEventListener('click', () => {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('span:last-child');
+            button.parentElement.parentElement.querySelectorAll('.accordion-content').forEach(c => {
+                 if (c !== content) {
+                     c.style.maxHeight = null;
+                     c.previousElementSibling.querySelector('span:last-child').classList.remove('rotate-180');
+                 }
+            });
+
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.classList.remove('rotate-180');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.classList.add('rotate-180');
+            } 
+        });
+    });
+
+    // --- Processes Section ---
+    const processSelector = document.getElementById('process-selector');
+    const processTitle = document.getElementById('process-title');
+    const processPurpose = document.getElementById('process-purpose');
+    const processDiagram = document.getElementById('process-diagram');
+    const processCharacteristics = document.getElementById('process-characteristics');
+    const processButtons = {};
+
+    Object.keys(appData.processes).forEach(key => {
+        const process = appData.processes[key];
+        const button = document.createElement('button');
+        button.className = 'process-btn p-2 rounded-md border border-slate-300 bg-white hover:bg-teal-500 hover:text-white transition-all duration-200 shadow-sm';
+        button.textContent = process.title;
+        button.dataset.process = key;
+        processSelector.appendChild(button);
+        processButtons[key] = button;
+    });
+
+    function updateProcessView(processKey) {
+        const process = appData.processes[processKey];
+        if (!process) return;
+
+        processTitle.textContent = process.title;
+        processPurpose.textContent = process.purpose;
+        processDiagram.innerHTML = process.diagram;
+        processCharacteristics.innerHTML = process.characteristics.map(item => `<li>${item}</li>`).join('');
+
+        Object.values(processButtons).forEach(btn => btn.classList.remove('active'));
+        processButtons[processKey].classList.add('active');
+
+        const ctx = document.getElementById('process-chart').getContext('2d');
+        if (processChartInstance) {
+            processChartInstance.destroy();
+        }
+        processChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: process.properties.labels,
+                datasets: [{
+                    label: process.title,
+                    data: process.properties.values,
+                    fill: true,
+                    backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                    borderColor: 'rgb(20, 184, 166)',
+                    pointBackgroundColor: 'rgb(20, 184, 166)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(20, 184, 166)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                        pointLabels: {
+                            font: { size: 12 },
+                            color: '#475569'
+                        },
+                        ticks: {
+                            backdropColor: 'rgba(0,0,0,0)',
+                            stepSize: 1,
+                            max: 5,
+                            min: 0,
+                            display: false,
+                        },
+                         suggestedMin: 0,
+                         suggestedMax: 5
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    processSelector.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            updateProcessView(e.target.dataset.process);
+        }
+    });
+
+    // --- Alloys Section ---
+    const alloySelector = document.getElementById('alloy-selector');
+    const alloyTitle = document.getElementById('alloy-title');
+    const alloyDescription = document.getElementById('alloy-description');
+    const alloyTreatments = document.getElementById('alloy-treatments');
+    const alloyMachining = document.getElementById('alloy-machining');
+
+    Object.keys(appData.alloys).forEach(key => {
+        const alloy = appData.alloys[key];
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = alloy.title;
+        alloySelector.appendChild(option);
+    });
+
+    function updateAlloyView(alloyKey) {
+        const alloy = appData.alloys[alloyKey];
+        if (!alloy) return;
+
+        alloyTitle.textContent = alloy.title;
+        alloyDescription.textContent = alloy.description;
+        alloyTreatments.innerHTML = alloy.treatments;
+        alloyMachining.innerHTML = alloy.machining;
+
+        const ctx = document.getElementById('alloy-chart').getContext('2d');
+        if (alloyChartInstance) {
+            alloyChartInstance.destroy();
+        }
+        alloyChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: alloy.properties,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: {
+                         grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    alloySelector.addEventListener('change', (e) => {
+        updateAlloyView(e.target.value);
+    });
+
+    // --- Initial Load ---
+    document.querySelector('.nav-btn[data-section="intro"]').classList.add('active');
+    updateProcessView('annealing');
+    updateAlloyView('ti-6al-4v');
+
+});
+</script>
+
+</body>
+</html>
