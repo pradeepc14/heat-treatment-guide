@@ -203,7 +203,7 @@
 
                         <div class="max-w-xl mx-auto bg-stone-100 p-6 rounded-lg border border-slate-200 shadow-inner">
                             <div class="slider-wrapper">
-                                <label for="grain-size-slider" class="font-semibold text-slate-800 text-lg block mb-2">Grain Size:</label>
+                                <label for="grain-size-slider" class="font-semibold text-slate-800 text-lg block mb-2">Grain Size (Finer to Coarser): <span id="grain-size-value"></span></label>
                                 <div class="slider-label-container">
                                     <span>Finer Grains</span>
                                     <span>Coarser Grains</span>
@@ -239,6 +239,10 @@
                                 <div class="slider-wrapper">
                                     <label for="fatigue-life-slider" class="font-medium text-slate-700">Fatigue Life: <span id="fatigue-life-value"></span></label>
                                     <input type="range" id="fatigue-life-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="internal-stresses-slider" class="font-medium text-slate-700">Internal Stresses: <span id="internal-stresses-value"></span></label>
+                                    <input type="range" id="internal-stresses-slider" min="0" max="100" value="50" disabled>
                                 </div>
                             </div>
                             <div class="text-center mt-6">
@@ -348,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Only the first paragraph is visible initially
                 content: `<p>Grain refinement generally enhances a material's toughness. By increasing the number of grain boundaries, cracks are more frequently deflected or blunted, requiring more energy for propagation. This often leads to an improved ductile-brittle transition temperature, indicating better resistance to brittle fracture.</p>`,
                 // Analogy content now in a separate property
-                analogyContent: `<p>To explain how grain boundaries in fine-grained materials impede crack propagation, we'll use an analogy where a crack is a runner navigating a city, aiming to travel 2000 meters from the center of a component to the left edge, representing fracture. Grains are neighborhoods, and grain boundaries are walls that force the runner to divert, expending extra energy.</p><p>In a coarse-grained material, large neighborhoods (e.g., 400 nm) allow the runner to sprint 400 meters before hitting a wall (grain boundary), requiring a small energy expenditure to divert around the obstacle due to differing crystal orientations. To cover 2000 meters, the runner faces only five walls (2000 ÷ 400), diverting five times with minimal energy cost, allowing the crack to propagate easily. In a fine-grained material, smaller neighborhoods (e.g., 100 nm) mean the runner hits a wall every 100 meters, facing 20 walls (2000 ÷ 100) and expending more energy to divert at each due to frequent deflections into zigzagging paths or blunting of momentum by stress diffusion at boundaries. These frequent, energy-costly diversions and blunting in fine-grained materials significantly increase the total energy required for the crack to reach the 2000-meter destination, reducing its propagation distance and enhancing the material's toughness by resisting fracture more effectively.</p>`
+                analogyContent: `<p>To explain how grain boundaries in fine-grained materials impede crack propagation, we'll use an analogy where a crack is a runner navigating a city, aiming to travel 2000 meters from the center of a component to the left edge, representing fracture. Grains are neighborhoods, and grain boundaries are walls that force the runner to divert, expending extra energy.</p><p>In a coarse-grained material, large neighborhoods (e.g., 400 nm) allow the runner to sprint 400 meters before hitting a wall (grain boundary), requiring a small energy expenditure to divert around the obstacle due to differing crystal orientations. To cover 2000 meters, the runner faces only five walls (2000 &divide; 400), diverting five times with minimal energy cost, allowing the crack to propagate easily. In a fine-grained material, smaller neighborhoods (e.g., 100 nm) mean the runner hits a wall every 100 meters, facing 20 walls (2000 &divide; 100) and expending more energy to divert at each due to frequent deflections into zigzagging paths or blunting of momentum by stress diffusion at boundaries. These frequent, energy-costly diversions and blunting in fine-grained materials significantly increase the total energy required for the crack to reach the 2000-meter destination, reducing its propagation distance and enhancing the material's toughness by resisting fracture more effectively.</p>`
             },
             {
                 title: 'Grain Size & Machinability',
@@ -393,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in low hardness and high ductility.",
                     "<strong>Low</strong> risk of distortion; can be done before final machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [5, 5, 10, 8, 1, 8] }, // After (scaled 1-10, Grain Size: 1=finer, 10=coarser)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [2, 2, 10, 8, 1, 8] }, // After (scaled 1-10, Grain Size: 1=finer, 10=coarser)
                 beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [7, 7, 5, 6, 9, 5] } // Before (scaled 1-10)
             },
             normalizing: {
@@ -427,8 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             hardening: {
                 title: 'Hardening (Quenching)',
-                aim: "To achieve maximum hardness and strength in the metal.",
-                purpose: "Significantly increases hardness and strength by heating to form a single phase (e.g., austenite in steel) and then rapidly cooling (quenching) to lock in a hard, brittle, non-equilibrium phase (e.g., martensite).",
+                aim: "To achieve maximum hardness and strength in the metal, often for wear resistance.",
+                purpose: "Significantly increases hardness and strength by heating to form a single phase (e.g., austenite in steel) and then rapidly cooling (quenchings) to lock in a hard, brittle, non-equilibrium phase (e.g., martensite).",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
                         <div class="w-1/3">Heating<div class="h-0.5 bg-rose-400 mt-1"></div></div>
@@ -447,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             tempering: {
                 title: 'Tempering',
-                aim: "To reduce the brittleness and internal stresses of hardened material, increasing its toughness and ductility.",
+                aim: "To reduce the brittleness and internal stresses of hardened material, increasing its toughness and ductility for practical applications.",
                 purpose: "Almost always performed after hardening. It reduces the brittleness and relieves the high internal stresses of the quenched part, increasing its toughness and ductility at the expense of some hardness.",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -487,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
              stress_relieving: {
                 title: 'Stress Relieving',
-                aim: "To reduce internal stresses in a material without significantly altering its mechanical properties.",
+                aim: "To reduce internal stresses in a material without significantly altering its mechanical properties, improving dimensional stability and preventing distortion.",
                 purpose: "Used to reduce internal stresses that may have been created during manufacturing processes like welding, casting, or heavy machining. This minimizes the risk of distortion during subsequent use or machining.",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -645,7 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Interactive Grain Size Effects Tool Logic ---
+    // --- Interactive Grain Size Effects Tool Logic (Reverted to simpler model) ---
+    // References to the property sliders and their value displays
     const grainSizeSlider = document.getElementById('grain-size-slider');
     const propertySliders = {
         strength: document.getElementById('strength-slider'),
@@ -654,27 +659,38 @@ document.addEventListener('DOMContentLoaded', () => {
         toughness: document.getElementById('toughness-slider'),
         machinability: document.getElementById('machinability-slider'),
         creepResistance: document.getElementById('creep-resistance-slider'),
-        fatigueLife: document.getElementById('fatigue-life-slider')
+        fatigueLife: document.getElementById('fatigue-life-slider'),
+        internalStresses: document.getElementById('internal-stresses-slider')
     };
     const propertyValues = {
         strength: document.getElementById('strength-value'),
         ductility: document.getElementById('ductility-value'),
         hardness: document.getElementById('hardness-value'),
         toughness: document.getElementById('toughness-value'),
+        grainSize: document.getElementById('grain-size-value'),
         machinability: document.getElementById('machinability-value'),
         creepResistance: document.getElementById('creep-resistance-value'),
-        fatigueLife: document.getElementById('fatigue-life-value')
+        fatigueLife: document.getElementById('fatigue-life-value'),
+        internalStresses: document.getElementById('internal-stresses-value')
     };
     const resetSlidersBtn = document.getElementById('reset-sliders-btn');
 
-    const defaultSliderValue = 50; // Center position
+    const defaultGrainSizeValue = 50; // Center position
 
-    function updatePropertySliders() {
+    // Helper function to clamp values between 0 and 100
+    function clamp(value) {
+        return Math.max(0, Math.min(100, value));
+    }
+
+    function updatePropertySlidersFromGrainSize() {
         const grainSize = parseInt(grainSizeSlider.value); // 0 (Finer) to 100 (Coarser)
+        propertyValues.grainSize.textContent = grainSize;
 
-        // Relationships based on the provided understanding:
-        // Strength, Hardness, Fatigue Life, Toughness, Machinability: Decrease as grain size increases (move left as grain size moves right)
-        // Ductility, Creep Resistance: Increase as grain size increases (move right as grain size moves right)
+        // Relationships based on common metallurgical understanding:
+        // Hardness: Higher for finer grains (lower grainSize value)
+        const hardness = 100 - grainSize;
+        propertySliders.hardness.value = hardness;
+        propertyValues.hardness.textContent = hardness.toFixed(0);
 
         // Strength: Higher for finer grains (lower grainSize value)
         const strength = 100 - grainSize;
@@ -686,20 +702,16 @@ document.addEventListener('DOMContentLoaded', () => {
         propertySliders.ductility.value = ductility;
         propertyValues.ductility.textContent = ductility.toFixed(0);
 
-        // Hardness: Higher for finer grains (lower grainSize value)
-        const hardness = 100 - grainSize;
-        propertySliders.hardness.value = hardness;
-        propertyValues.hardness.textContent = hardness.toFixed(0);
+        // Toughness: Generally higher for finer grains (better crack arrest), but also benefits from ductility.
+        // Let's make it follow an inverse of grain size, with some influence from ductility.
+        const toughness = (100 - grainSize) * 0.7 + ductility * 0.3; // Weighted towards grain size
+        propertySliders.toughness.value = clamp(toughness);
+        propertyValues.toughness.textContent = clamp(toughness).toFixed(0);
 
-        // Toughness: Higher for finer grains (lower grainSize value)
-        const toughness = 100 - grainSize;
-        propertySliders.toughness.value = toughness;
-        propertyValues.toughness.textContent = toughness.toFixed(0);
-
-        // Machinability: Higher for finer grains (lower grainSize value)
-        const machinability = 100 - grainSize;
-        propertySliders.machinability.value = machinability;
-        propertyValues.machinability.textContent = machinability.toFixed(0);
+        // Machinability: Generally better with lower hardness and higher ductility.
+        const machinability = (100 - hardness) * 0.6 + ductility * 0.4;
+        propertySliders.machinability.value = clamp(machinability);
+        propertyValues.machinability.textContent = clamp(machinability).toFixed(0);
 
         // Creep Resistance: Higher for coarser grains (higher grainSize value)
         const creepResistance = grainSize;
@@ -710,14 +722,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const fatigueLife = 100 - grainSize;
         propertySliders.fatigueLife.value = fatigueLife;
         propertyValues.fatigueLife.textContent = fatigueLife.toFixed(0);
+
+        // Internal Stresses: Finer grains can sometimes help dissipate stresses, coarser might retain more if less uniform.
+        // For simplicity, let's make it slightly inverse to grain size (finer grains = lower internal stresses)
+        const internalStresses = 100 - grainSize; // Low value means low stress, high value means high stress
+        propertySliders.internalStresses.value = internalStresses;
+        propertyValues.internalStresses.textContent = internalStresses.toFixed(0);
     }
 
+    // Function to reset all sliders to default and update
     function resetSliders() {
-        grainSizeSlider.value = defaultSliderValue;
-        updatePropertySliders();
+        grainSizeSlider.value = defaultGrainSizeValue;
+        updatePropertySlidersFromGrainSize();
     }
 
-    grainSizeSlider.addEventListener('input', updatePropertySliders);
+    // Event listeners
+    grainSizeSlider.addEventListener('input', updatePropertySlidersFromGrainSize);
     resetSlidersBtn.addEventListener('click', resetSliders);
 
     // Initial setup for the interactive tool
@@ -901,16 +921,25 @@ document.addEventListener('DOMContentLoaded', () => {
         let chatHistory = [];
         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
         const payload = { contents: chatHistory };
-        const apiKey = "";
+        const apiKey = ""; // This should be handled by the Canvas environment
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         try {
+            console.log('Attempting to fetch AI explanation...');
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('API response not OK:', response.status, response.statusText, errorData);
+                throw new Error(`API error: ${response.status} ${response.statusText}`);
+            }
+
             const result = await response.json();
+            console.log('AI response received:', result); // Log the full response
 
             if (result.candidates && result.candidates.length > 0 &&
                 result.candidates[0].content && result.candidates[0].content.parts &&
@@ -919,12 +948,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 alloyLlmOutput.textContent = text;
                 alloyLlmOutput.classList.remove('hidden');
             } else {
-                alloyLlmOutput.textContent = 'Sorry, I could not generate an explanation. Please try again.';
+                console.warn('AI response structure unexpected or empty content:', result);
+                alloyLlmOutput.textContent = 'Sorry, I could not generate an explanation. The AI response was empty or malformed.';
                 alloyLlmOutput.classList.remove('hidden');
             }
         } catch (error) {
             console.error('Error calling Gemini API:', error);
-            alloyLlmOutput.textContent = 'An error occurred while fetching the explanation. Please check your internet connection and try again.';
+            alloyLlmOutput.textContent = `An error occurred while fetching the explanation: ${error.message}. Please check your internet connection and try again. See console for details.`;
             alloyLlmOutput.classList.remove('hidden');
         } finally {
             explainAlloyBtn.disabled = false;
@@ -1012,4 +1042,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
