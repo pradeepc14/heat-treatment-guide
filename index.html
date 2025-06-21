@@ -9,6 +9,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Warm Neutral Harmony" - A calming and professional palette using Stone for the background, Slate and Zinc for text and elements, and a muted Teal for accents and interactivity. -->
+    <!-- Application Structure Plan: The SPA is designed with a user-centric, non-linear exploratory structure. Instead of mirroring the report's chapters, it's organized into four logical, interactive tabs: 'Introduction' (for context), 'Principles' (for foundational knowledge via an accordion), 'Processes' (a comparative dashboard), and 'Alloys' (a case-study explorer). This task-oriented design allows users to either learn sequentially or jump directly to their area of interest, facilitating easier comparison and understanding. The core interaction revolves around selecting a process or alloy and seeing detailed, visual information update dynamically, which is more engaging than static text. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Core heat treatment processes (Annealing, etc.) -> Goal: Compare their effects -> Viz: Clickable cards revealing a details panel with: 1) HTML/CSS process flow diagram for visual representation of temperature/time. 2) Chart.js Radar Chart to compare multi-dimensional property trade-offs (hardness, ductility, etc.). 3) Text blocks for summaries. -> Justification: This provides a quick, comparative overview and a deep dive on demand.
+        - Report Info: Specific alloys (Ti-6Al-4V, etc.) and their properties before/after treatment -> Goal: Show the tangible results of heat treatment -> Viz: Dropdown to select an alloy, populating a Chart.js Bar Chart. -> Justification: A bar chart is ideal for direct, quantitative comparison of properties like tensile strength.
+        - Report Info: Foundational concepts (Hall-Petch, etc.) -> Goal: Explain core theories -> Viz: HTML/CSS accordion. -> Justification: Hides complexity, allowing users to focus on one concept at a time.
+        - New: Interactive Grain Size Slider Tool -> Goal: Visually demonstrate the relative impact of grain size on various properties -> Viz: Multiple linked HTML range sliders. -> Justification: Provides direct, experiential learning about property relationships.
+        - Library/Method: Chart.js (Canvas) for all charts. HTML/CSS/Tailwind for all diagrams and layouts. JS for all interactivity.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -52,6 +62,13 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
+        }
+        /* Add margin to paragraphs within accordion content */
+        .accordion-content p {
+            margin-bottom: 1em; /* Adjust as needed for desired gap */
+        }
+        .accordion-content p:last-child {
+            margin-bottom: 0; /* No margin after the last paragraph */
         }
         /* Slider Styling */
         input[type="range"] {
@@ -316,11 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             {
                 title: 'Grain Size & Ductility',
-                content: `While smaller grain sizes increase a material's strength, conversely, they also tend to make the material less ductile. This is because the increased number of grain boundaries in fine-grained materials can obstruct the 'freer movement of dislocations' that contribute to plastic deformation. Larger grain sizes typically mean fewer grain boundaries, which allow for more unhindered dislocation movement, thereby generally leading to higher ductility. However, this does not mean larger grains always guarantee highly ductile materials, as other factors like imperfections in the crystal structure, specific grain boundary characteristics, and temperature can also significantly affect ductility.`
+                content: `<p>While smaller grain sizes increase a material's strength, conversely, they also tend to make the material less ductile. This is because the increased number of grain boundaries in fine-grained materials can obstruct the 'freer movement of dislocations' that contribute to plastic deformation. Larger grain sizes typically mean fewer grain boundaries, which allow for more unhindered dislocation movement, thereby generally leading to higher ductility.</p><p>However, this does not mean larger grains always guarantee highly ductile materials, as other factors like imperfections in the crystal structure, specific grain boundary characteristics, and temperature can also significantly affect ductility.</p>`
             },
             {
                 title: 'Grain Size & Toughness',
-                content: `<p>Grain refinement generally enhances a material's toughness. By increasing the number of grain boundaries, cracks are more frequently deflected or blunted, requiring more energy for propagation. This often leads to an improved ductile-brittle transition temperature, indicating better resistance to brittle fracture.</p><p>To explain how grain boundaries in fine-grained materials impede crack propagation, we'll use an analogy where a crack is a runner navigating a city, aiming to travel 2000 meters from the center of a component to the left edge, representing fracture. Grains are neighborhoods, and grain boundaries are walls that force the runner to divert, expending extra energy.</p><p>In a coarse-grained material, large neighborhoods (e.g., 400 nm) allow the runner to sprint 400 meters before hitting a wall (grain boundary), requiring a small energy expenditure to divert around the obstacle due to differing crystal orientations. To cover 2000 meters, the runner faces only five walls (2000 ÷ 400), diverting five times with minimal energy cost, allowing the crack to propagate easily. In a fine-grained material, smaller neighborhoods (e.g., 100 nm) mean the runner hits a wall every 100 meters, facing 20 walls (2000 ÷ 100) and expending more energy to divert at each due to frequent deflections into zigzagging paths or blunting of momentum by stress diffusion at boundaries. These frequent, energy-costly diversions and blunting in fine-grained materials significantly increase the total energy required for the crack to reach the 2000-meter destination, reducing its propagation distance and enhancing the material's toughness by resisting fracture more effectively.</p>`
+                // Only the first paragraph is visible initially
+                content: `<p>Grain refinement generally enhances a material's toughness. By increasing the number of grain boundaries, cracks are more frequently deflected or blunted, requiring more energy for propagation. This often leads to an improved ductile-brittle transition temperature, indicating better resistance to brittle fracture.</p>`,
+                // Analogy content now in a separate property
+                analogyContent: `<p>To explain how grain boundaries in fine-grained materials impede crack propagation, we'll use an analogy where a crack is a runner navigating a city, aiming to travel 2000 meters from the center of a component to the left edge, representing fracture. Grains are neighborhoods, and grain boundaries are walls that force the runner to divert, expending extra energy.</p><p>In a coarse-grained material, large neighborhoods (e.g., 400 nm) allow the runner to sprint 400 meters before hitting a wall (grain boundary), requiring a small energy expenditure to divert around the obstacle due to differing crystal orientations. To cover 2000 meters, the runner faces only five walls (2000 ÷ 400), diverting five times with minimal energy cost, allowing the crack to propagate easily. In a fine-grained material, smaller neighborhoods (e.g., 100 nm) mean the runner hits a wall every 100 meters, facing 20 walls (2000 ÷ 100) and expending more energy to divert at each due to frequent deflections into zigzagging paths or blunting of momentum by stress diffusion at boundaries. These frequent, energy-costly diversions and blunting in fine-grained materials significantly increase the total energy required for the crack to reach the 2000-meter destination, reducing its propagation distance and enhancing the material's toughness by resisting fracture more effectively.</p>`
             },
             {
                 title: 'Grain Size & Machinability',
@@ -336,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             {
                 title: 'Grain Size & Corrosion Resistance',
-                content: `The relationship between grain size and corrosion resistance is complex. While finer grains inherently mean more grain boundary area (which can be susceptible to intergranular corrosion), a uniform, fine-grained structure can sometimes offer improved overall corrosion resistance by preventing localized attack and promoting the formation of passive layers.`
+                content: `<p>The relationship between grain size and corrosion resistance is complex.</p><p>While finer grains inherently mean more grain boundary area (which can be susceptible to intergranular corrosion), a uniform, fine-grained structure can sometimes offer improved overall corrosion resistance by preventing localized attack and promoting the formation of passive layers.</p>`
             },
             {
                 title: 'Phase Transformations',
@@ -529,7 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
     appData.principles.forEach((item, index) => {
         const accordionItem = document.createElement('div');
         accordionItem.className = 'border border-slate-200 rounded-lg';
-        accordionItem.innerHTML = `
+        let contentHtml = `
             <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-slate-800 hover:bg-slate-50">
                 <span>${item.title}</span>
                 <span class="transform transition-transform duration-300">
@@ -537,9 +557,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 </span>
             </button>
             <div class="accordion-content">
-                <p class="p-4 pt-0 text-slate-600">${item.content}</p>
-            </div>
+                <div class="p-4 pt-0 text-slate-600">${item.content}</div>
         `;
+
+        // Add Analogy button and content only for 'Grain Size & Toughness'
+        if (item.title === 'Grain Size & Toughness' && item.analogyContent) {
+            contentHtml += `
+                <div class="px-4 pb-4">
+                    <button class="analogy-btn py-2 px-4 bg-teal-500 text-white font-semibold rounded-md shadow-sm hover:bg-teal-600 transition-colors text-sm">Show Analogy</button>
+                    <div class="analogy-text mt-4 p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-200 hidden">
+                        ${item.analogyContent}
+                    </div>
+                </div>
+            `;
+        }
+        contentHtml += `</div>`; // Close accordion-content div
+        accordionItem.innerHTML = contentHtml;
         accordionContainer.appendChild(accordionItem);
     });
 
@@ -560,6 +593,25 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
                 icon.classList.add('rotate-180');
+            }
+        });
+    });
+
+    // Add event listener for Analogy buttons
+    document.querySelectorAll('.analogy-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const analogyText = button.nextElementSibling; // The div containing analogy content
+            if (analogyText.classList.contains('hidden')) {
+                analogyText.classList.remove('hidden');
+                button.textContent = 'Hide Analogy';
+            } else {
+                analogyText.classList.add('hidden');
+                button.textContent = 'Show Analogy';
+            }
+            // Recalculate max-height for accordion-content if it's open
+            const accordionContentDiv = button.closest('.accordion-content');
+            if (accordionContentDiv && accordionContentDiv.style.maxHeight !== '0px') {
+                accordionContentDiv.style.maxHeight = accordionContentDiv.scrollHeight + "px";
             }
         });
     });
@@ -873,5 +925,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
-
