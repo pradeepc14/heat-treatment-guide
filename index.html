@@ -9,15 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: "Warm Neutral Harmony" - A calming and professional palette using Stone for the background, Slate and Zinc for text and elements, and a muted Teal for accents and interactivity. -->
-    <!-- Application Structure Plan: The SPA is designed with a user-centric, non-linear exploratory structure. Instead of mirroring the report's chapters, it's organized into four logical, interactive tabs: 'Introduction' (for context), 'Principles' (for foundational knowledge via an accordion), 'Processes' (a comparative dashboard), and 'Alloys' (a case-study explorer). This task-oriented design allows users to either learn sequentially or jump directly to their area of interest, facilitating easier comparison and understanding. The core interaction revolves around selecting a process or alloy and seeing detailed, visual information update dynamically, which is more engaging than static text. -->
-    <!-- Visualization & Content Choices: 
-        - Report Info: Core heat treatment processes (Annealing, etc.) -> Goal: Compare their effects -> Viz: Clickable cards revealing a details panel with: 1) HTML/CSS process flow diagram for visual representation of temperature/time. 2) Chart.js Radar Chart to compare multi-dimensional property trade-offs (hardness, ductility, etc.). 3) Text blocks for summaries. -> Justification: This provides a quick, comparative overview and a deep dive on demand.
-        - Report Info: Specific alloys (Ti-6Al-4V, etc.) and their properties before/after treatment -> Goal: Show the tangible results of heat treatment -> Viz: Dropdown to select an alloy, populating a Chart.js Bar Chart. -> Justification: A bar chart is ideal for direct, quantitative comparison of properties like tensile strength.
-        - Report Info: Foundational concepts (Hall-Petch, etc.) -> Goal: Explain core theories -> Viz: HTML/CSS accordion. -> Justification: Hides complexity, allowing users to focus on one concept at a time.
-        - Library/Method: Chart.js (Canvas) for all charts. HTML/CSS/Tailwind for all diagrams and layouts. JS for all interactivity.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -62,6 +53,68 @@
             overflow: hidden;
             transition: max-height 0.3s ease-out;
         }
+        /* Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #d1d5db; /* gray-300 */
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+            border-radius: 4px;
+        }
+
+        /* Thumb for general sliders */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #14b8a6; /* teal-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #14b8a6; /* teal-500 */
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Specific styling for the main Grain Size slider */
+        #grain-size-slider::-webkit-slider-thumb {
+            width: 28px; /* Larger */
+            height: 28px;
+            background: #0f766e; /* Darker teal */
+            border: 2px solid #a7f3d0; /* Light border for pop */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); /* More pronounced shadow */
+        }
+
+        #grain-size-slider::-moz-range-thumb {
+            width: 28px; /* Larger */
+            height: 28px;
+            background: #0f766e; /* Darker teal */
+            border: 2px solid #a7f3d0; /* Light border for pop */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4); /* More pronounced shadow */
+        }
+
+
+        .slider-label-container {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem; /* text-sm */
+            color: #475569; /* slate-600 */
+            margin-bottom: 0.25rem;
+        }
+        .slider-wrapper {
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-slate-800">
@@ -80,7 +133,6 @@
         </nav>
 
         <main>
-            <!-- Introduction Section -->
             <section id="intro" class="content-section active">
                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-2xl font-bold text-slate-900 mb-4">What is Heat Treatment?</h2>
@@ -104,25 +156,71 @@
                 </div>
             </section>
 
-            <!-- Principles Section -->
             <section id="principles" class="content-section">
                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-2xl font-bold text-slate-900 mb-4">Foundational Principles</h2>
                     <p class="text-slate-600 mb-6">Heat treatment works by manipulating the internal microstructure of metals. Understanding these core principles is key to understanding the 'why' behind the processes. Click each principle to learn more.</p>
                     <div id="accordion-container" class="space-y-3">
-                        <!-- Accordion items will be injected here by JS -->
+                        </div>
+
+                    <div class="mt-10 pt-6 border-t border-slate-200">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4">Interactive Grain Size Effects</h3>
+                        <p class="text-slate-600 mb-6">Explore how changing grain size (from Finer to Coarser) can influence various material properties. Move the 'Grain Size' slider and observe the changes in other properties.</p>
+
+                        <div class="max-w-xl mx-auto bg-stone-100 p-6 rounded-lg border border-slate-200 shadow-inner">
+                            <div class="slider-wrapper">
+                                <label for="grain-size-slider" class="font-semibold text-slate-800 text-lg block mb-2">Grain Size:</label>
+                                <div class="slider-label-container">
+                                    <span>Finer Grains</span>
+                                    <span>Coarser Grains</span>
+                                </div>
+                                <input type="range" id="grain-size-slider" min="0" max="100" value="50">
+                            </div>
+
+                            <div class="space-y-4 mt-6">
+                                <div class="slider-wrapper">
+                                    <label for="strength-slider" class="font-medium text-slate-700">Strength: <span id="strength-value"></span></label>
+                                    <input type="range" id="strength-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="ductility-slider" class="font-medium text-slate-700">Ductility: <span id="ductility-value"></span></label>
+                                    <input type="range" id="ductility-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="hardness-slider" class="font-medium text-slate-700">Hardness: <span id="hardness-value"></span></label>
+                                    <input type="range" id="hardness-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="toughness-slider" class="font-medium text-slate-700">Toughness: <span id="toughness-value"></span></label>
+                                    <input type="range" id="toughness-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="machinability-slider" class="font-medium text-slate-700">Machinability: <span id="machinability-value"></span></label>
+                                    <input type="range" id="machinability-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="creep-resistance-slider" class="font-medium text-slate-700">Creep Resistance: <span id="creep-resistance-value"></span></label>
+                                    <input type="range" id="creep-resistance-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                                <div class="slider-wrapper">
+                                    <label for="fatigue-life-slider" class="font-medium text-slate-700">Fatigue Life: <span id="fatigue-life-value"></span></label>
+                                    <input type="range" id="fatigue-life-slider" min="0" max="100" value="50" disabled>
+                                </div>
+                            </div>
+                            <div class="text-center mt-6">
+                                <button id="reset-sliders-btn" class="py-2 px-6 bg-teal-600 text-white font-semibold rounded-md shadow hover:bg-teal-700 transition-colors">Reset Sliders</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Processes Section -->
             <section id="processes" class="content-section">
                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-2xl font-bold text-slate-900 mb-2">Comparing Heat Treatment Processes</h2>
                     <p class="text-slate-600 mb-6">Select a process to see its purpose, procedural diagram, and its typical impact on key mechanical properties. This allows for a direct comparison of outcomes.</p>
                     <div id="process-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4 mb-8">
-                        <!-- Process buttons will be injected here by JS -->
-                    </div>
+                        </div>
                     <div id="process-details" class="grid lg:grid-cols-2 gap-8 items-start">
                         <div class="space-y-4">
                             <h3 id="process-title" class="text-xl font-bold text-slate-800"></h3>
@@ -146,7 +244,6 @@
                 </div>
             </section>
 
-            <!-- Alloys Section -->
             <section id="alloys" class="content-section">
                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-2xl font-bold text-slate-900 mb-2">Alloy Deep Dive</h2>
@@ -154,8 +251,7 @@
                     <div class="flex items-center space-x-4 mb-8">
                         <label for="alloy-selector" class="font-semibold">Select Alloy:</label>
                         <select id="alloy-selector" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
-                            <!-- Options will be injected by JS -->
-                        </select>
+                            </select>
                     </div>
                      <div id="alloy-details" class="grid lg:grid-cols-2 gap-8 items-start">
                         <div class="space-y-4">
@@ -189,7 +285,31 @@ document.addEventListener('DOMContentLoaded', () => {
         principles: [
             {
                 title: 'Grain Size & The Hall-Petch Relationship',
-                content: "This principle states that a material's strength increases as its grain size decreases. Smaller grains create more grain boundaries, which act as barriers to dislocation movement, the primary mechanism of plastic deformation. Therefore, finer-grained materials are generally harder and stronger. However, at nanoscale levels, this effect can reverse (Inverse Hall-Petch)."
+                content: `This principle states that a material's strength increases as its grain size decreases. Smaller grains create more grain boundaries, which act as barriers to dislocation movement, the primary mechanism of plastic deformation. Therefore, finer-grained materials are generally harder and stronger. However, at nanoscale levels, this effect can reverse (Inverse Hall-Petch).`
+            },
+            {
+                title: 'Grain Size & Ductility',
+                content: `While smaller grain sizes increase a material's strength, conversely, they also tend to make the material less ductile. This is because the increased number of grain boundaries in fine-grained materials can obstruct the 'freer movement of dislocations' that contribute to plastic deformation. Larger grain sizes typically mean fewer grain boundaries, which allow for more unhindered dislocation movement, thereby generally leading to higher ductility. However, this does not mean larger grains always guarantee highly ductile materials, as other factors like imperfections in the crystal structure, specific grain boundary characteristics, and temperature can also significantly affect ductility.`
+            },
+            {
+                title: 'Grain Size & Toughness',
+                content: `Grain refinement generally enhances a material's toughness. By increasing the number of grain boundaries, cracks are more frequently deflected or blunted, requiring more energy for propagation. This often leads to an improved ductile-brittle transition temperature, indicating better resistance to brittle fracture.`
+            },
+            {
+                title: 'Grain Size & Machinability',
+                content: `A fine and uniform grain structure can often contribute to improved machinability. This homogeneity allows for more consistent chip formation and smoother material removal during cutting operations, though specific alloy characteristics also play a significant role.`
+            },
+            {
+                title: 'Grain Size & Creep Resistance',
+                content: `At elevated temperatures, larger grain sizes typically provide better creep resistance. Grain boundaries are often preferential sites for creep deformation mechanisms like grain boundary sliding. Therefore, reducing the total grain boundary area by having larger grains can slow down the creep rate.`
+            },
+            {
+                title: 'Grain Size & Fatigue Life',
+                content: `Finer grains generally enhance a material's fatigue resistance. The increased density of grain boundaries acts as effective obstacles to the initiation and propagation of fatigue cracks, leading to a longer fatigue life.`
+            },
+            {
+                title: 'Grain Size & Corrosion Resistance',
+                content: `The relationship between grain size and corrosion resistance is complex. While finer grains inherently mean more grain boundary area (which can be susceptible to intergranular corrosion), a uniform, fine-grained structure can sometimes offer improved overall corrosion resistance by preventing localized attack and promoting the formation of passive layers.`
             },
             {
                 title: 'Phase Transformations',
@@ -364,10 +484,10 @@ document.addEventListener('DOMContentLoaded', () => {
     navButtons.forEach(button => {
         button.addEventListener('click', () => {
             const sectionId = button.dataset.section;
-            
+
             navButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
+
             sections.forEach(section => {
                 section.classList.remove('active');
                 if (section.id === sectionId) {
@@ -413,9 +533,88 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
                 icon.classList.add('rotate-180');
-            } 
+            }
         });
     });
+
+    // --- Interactive Grain Size Effects Tool Logic ---
+    const grainSizeSlider = document.getElementById('grain-size-slider');
+    const propertySliders = {
+        strength: document.getElementById('strength-slider'),
+        ductility: document.getElementById('ductility-slider'),
+        hardness: document.getElementById('hardness-slider'),
+        toughness: document.getElementById('toughness-slider'),
+        machinability: document.getElementById('machinability-slider'),
+        creepResistance: document.getElementById('creep-resistance-slider'),
+        fatigueLife: document.getElementById('fatigue-life-slider')
+    };
+    const propertyValues = {
+        strength: document.getElementById('strength-value'),
+        ductility: document.getElementById('ductility-value'),
+        hardness: document.getElementById('hardness-value'),
+        toughness: document.getElementById('toughness-value'),
+        machinability: document.getElementById('machinability-value'),
+        creepResistance: document.getElementById('creep-resistance-value'),
+        fatigueLife: document.getElementById('fatigue-life-value')
+    };
+    const resetSlidersBtn = document.getElementById('reset-sliders-btn');
+
+    const defaultSliderValue = 50; // Center position
+
+    function updatePropertySliders() {
+        const grainSize = parseInt(grainSizeSlider.value); // 0 (Finer) to 100 (Coarser)
+
+        // Relationships based on the provided understanding:
+        // Strength, Hardness, Fatigue Life, Toughness, Machinability: Decrease as grain size increases (move left as grain size moves right)
+        // Ductility, Creep Resistance: Increase as grain size increases (move right as grain size moves right)
+
+        // Strength: Higher for finer grains (lower grainSize value)
+        const strength = 100 - grainSize;
+        propertySliders.strength.value = strength;
+        propertyValues.strength.textContent = strength.toFixed(0);
+
+        // Ductility: Higher for coarser grains (higher grainSize value)
+        const ductility = grainSize;
+        propertySliders.ductility.value = ductility;
+        propertyValues.ductility.textContent = ductility.toFixed(0);
+
+        // Hardness: Higher for finer grains (lower grainSize value)
+        const hardness = 100 - grainSize;
+        propertySliders.hardness.value = hardness;
+        propertyValues.hardness.textContent = hardness.toFixed(0);
+
+        // Toughness: Higher for finer grains (lower grainSize value)
+        const toughness = 100 - grainSize;
+        propertySliders.toughness.value = toughness;
+        propertyValues.toughness.textContent = toughness.toFixed(0);
+
+        // Machinability: Higher for finer grains (lower grainSize value)
+        const machinability = 100 - grainSize;
+        propertySliders.machinability.value = machinability;
+        propertyValues.machinability.textContent = machinability.toFixed(0);
+
+        // Creep Resistance: Higher for coarser grains (higher grainSize value)
+        const creepResistance = grainSize;
+        propertySliders.creepResistance.value = creepResistance;
+        propertyValues.creepResistance.textContent = creepResistance.toFixed(0);
+
+        // Fatigue Life: Higher for finer grains (lower grainSize value)
+        const fatigueLife = 100 - grainSize;
+        propertySliders.fatigueLife.value = fatigueLife;
+        propertyValues.fatigueLife.textContent = fatigueLife.toFixed(0);
+    }
+
+    function resetSliders() {
+        grainSizeSlider.value = defaultSliderValue;
+        updatePropertySliders();
+    }
+
+    grainSizeSlider.addEventListener('input', updatePropertySliders);
+    resetSlidersBtn.addEventListener('click', resetSliders);
+
+    // Initial setup for the interactive tool
+    resetSliders(); // Set to default on load
+
 
     // --- Processes Section ---
     const processSelector = document.getElementById('process-selector');
@@ -584,3 +783,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
