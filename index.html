@@ -258,6 +258,7 @@
                     <div id="process-details" class="grid lg:grid-cols-2 gap-8 items-start">
                         <div class="space-y-4">
                             <h3 id="process-title" class="text-xl font-bold text-slate-800"></h3>
+                            <p id="process-aim" class="text-slate-700 font-medium leading-relaxed mt-2"></p> <!-- New AIM/Outcome paragraph -->
                             <p id="process-purpose" class="text-slate-600 leading-relaxed"></p>
                             <div>
                                 <h4 class="font-semibold mb-2">Process Overview:</h4>
@@ -266,6 +267,13 @@
                             <div>
                                 <h4 class="font-semibold mb-2">Key Characteristics:</h4>
                                 <ul id="process-characteristics" class="list-disc list-inside text-slate-600 space-y-1"></ul>
+                            </div>
+                            <!-- New section for Normalizing vs Annealing difference -->
+                            <div id="normalizing-difference-section" class="mt-4 pt-4 border-t border-slate-200 hidden">
+                                <h4 class="font-semibold text-slate-800 mb-2">Normalizing vs. Annealing: Key Differences</h4>
+                                <div id="normalizing-difference-summary" class="text-slate-600 mb-2"></div>
+                                <button id="show-normalizing-details-btn" class="py-2 px-4 bg-gray-300 text-slate-700 font-semibold rounded-md shadow-sm hover:bg-gray-400 transition-colors text-sm mt-2">Show Details</button>
+                                <div id="normalizing-details-text" class="mt-4 p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-200 hidden"></div>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
@@ -370,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
         processes: {
             annealing: {
                 title: 'Annealing',
+                aim: "To soften the material, increase ductility, improve machinability, and relieve internal stresses.",
                 purpose: "Primarily used to soften a metal, increase ductility, and relieve internal stresses, making it more workable and machinable. It creates a uniform, stress-free microstructure.",
                 diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -384,11 +393,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in low hardness and high ductility.",
                     "<strong>Low</strong> risk of distortion; can be done before final machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 2, 10, 8, 10] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 6] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [2, 2, 10, 8, 1, 8] }, // After (scaled 1-10, Grain Size: 1=finer, 10=coarser)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [7, 7, 5, 6, 9, 5] } // Before (scaled 1-10)
             },
             normalizing: {
                 title: 'Normalizing',
+                aim: "To refine the grain structure, improve strength and uniformity, and reduce residual stresses, preparing the metal for further processing.",
                 purpose: "Applied to ferrous alloys to refine the grain structure and improve mechanical properties and machinability after operations like forging or casting. It produces a more uniform and fine-grained structure than annealing.",
                 diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -403,11 +413,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in higher strength than annealed state.",
                     "<strong>Moderate</strong> risk of distortion."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 6, 8, 8, 8] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 4] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [5, 6, 7, 7, 4, 4] }, // After (scaled 1-10, Grain Size: 1=finer, 10=coarser)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [6, 6, 6, 6, 8, 7] }, // Before (scaled 1-10)
+                // Split difference explanation for button functionality
+                differenceSummary: `<p>While both annealing and normalizing involve heating metal to high temperatures, their key differences lie in their <strong>cooling rates</strong> and <strong>primary objectives:</strong></p>`,
+                differenceDetails: `
+                    <ul class="list-disc list-inside ml-4 space-y-1 text-sm">
+                        <li><strong>Cooling:</strong> Annealing involves very slow cooling (usually in the furnace) allowing for complete equilibrium, whereas normalizing involves cooling in still air, which is faster.</li>
+                        <li><strong>Purpose & Microstructure:</strong> Annealing aims for maximum softness and ductility, often resulting in coarser grains and a more stable microstructure. Normalizing, due to faster cooling, produces a finer, more uniform grain structure and higher strength and hardness than annealed steel, making it ideal for preparing metal for further processing.</li>
+                        <li><strong>Applications:</strong> Annealing is used for softening, improving machinability, and relieving stress. Normalizing is used for improving mechanical properties and preparing metal for hardening or other treatments.</li>
+                    </ul>
+                `
             },
             hardening: {
                 title: 'Hardening (Quenching)',
+                aim: "To achieve maximum hardness and strength in the metal.",
                 purpose: "Significantly increases hardness and strength by heating to form a single phase (e.g., austenite in steel) and then rapidly cooling (quenching) to lock in a hard, brittle, non-equilibrium phase (e.g., martensite).",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -422,11 +442,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in very high hardness and brittleness.",
                     "<strong>High</strong> risk of distortion and cracking; must be followed by tempering."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [10, 10, 2, 2, 2] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 6] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [10, 10, 2, 2, 9, 6] }, // After (scaled 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [6, 6, 6, 6, 4, 6] } // Before (scaled 1-10)
             },
             tempering: {
                 title: 'Tempering',
+                aim: "To reduce the brittleness and internal stresses of hardened material, increasing its toughness and ductility.",
                 purpose: "Almost always performed after hardening. It reduces the brittleness and relieves the high internal stresses of the quenched part, increasing its toughness and ductility at the expense of some hardness.",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -441,11 +462,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Decreases hardness, increases toughness.",
                     "Improves dimensional stability; done <strong>before</strong> final machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [8, 8, 6, 8, 10] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [10, 10, 2, 2, 2] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [7, 7, 7, 8, 2, 6] }, // After (scaled 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [10, 10, 2, 2, 9, 6] } // Before (scaled 1-10)
             },
             age_hardening: {
                 title: 'Age Hardening',
+                aim: "To increase the strength and hardness of certain non-ferrous alloys through controlled precipitation of fine particles.",
                 purpose: "A multi-step process (solution treat, quench, age) to strengthen non-ferrous alloys (e.g., Al, Ti, Ni-based). It works by creating a supersaturated solid solution and then allowing fine particles (precipitates) to form, which obstruct dislocation movement.",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -460,11 +482,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Provides very high strength-to-weight ratios.",
                     "Distortion can occur during quench; aging helps relieve stress."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [8, 10, 4, 6, 6] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 8, 8, 6] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [8, 9, 5, 6, 3, 7] }, // After (scaled 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [4, 4, 8, 8, 6, 7] } // Before (scaled 1-10)
             },
              stress_relieving: {
                 title: 'Stress Relieving',
+                aim: "To reduce internal stresses in a material without significantly altering its mechanical properties.",
                 purpose: "Used to reduce internal stresses that may have been created during manufacturing processes like welding, casting, or heavy machining. This minimizes the risk of distortion during subsequent use or machining.",
                  diagram: `
                     <div class="flex items-center h-20 text-xs text-center">
@@ -479,8 +502,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Primary goal is dimensional stability.",
                     "Ideal for complex parts before final, tight-tolerance machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 6, 6, 10] }, // After (scaled from 1-5 to 1-10)
-                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 6, 6, 2] } // Before (scaled from 1-5 to 1-10)
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [5, 5, 6, 6, 1, 5] }, // After (scaled 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Internal Stresses', 'Grain Size'], values: [5, 5, 6, 6, 9, 5] } // Before (scaled 1-10)
             }
         },
         alloys: {
@@ -704,9 +727,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Processes Section ---
     const processSelector = document.getElementById('process-selector');
     const processTitle = document.getElementById('process-title');
+    const processAim = document.getElementById('process-aim'); // Get the new aim element
     const processPurpose = document.getElementById('process-purpose');
     const processDiagram = document.getElementById('process-diagram');
     const processCharacteristics = document.getElementById('process-characteristics');
+
+    // New elements for Normalizing differences
+    const normalizingDifferenceSection = document.getElementById('normalizing-difference-section');
+    const normalizingDifferenceSummary = document.getElementById('normalizing-difference-summary');
+    const normalizingDetailsText = document.getElementById('normalizing-details-text');
+    const showNormalizingDetailsBtn = document.getElementById('show-normalizing-details-btn');
+
     const processButtons = {};
 
     Object.keys(appData.processes).forEach(key => {
@@ -724,9 +755,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!process) return;
 
         processTitle.textContent = process.title;
+        processAim.textContent = `Aim/Outcome: ${process.aim}`; // Set the aim text
         processPurpose.textContent = process.purpose;
         processDiagram.innerHTML = process.diagram;
         processCharacteristics.innerHTML = process.characteristics.map(item => `<li>${item}</li>`).join('');
+
+        // Show/Hide Normalizing difference section and content
+        if (processKey === 'normalizing' && process.differenceSummary) {
+            normalizingDifferenceSection.classList.remove('hidden');
+            normalizingDifferenceSummary.innerHTML = process.differenceSummary;
+            // Ensure details are hidden and button text is reset when switching to normalizing
+            normalizingDetailsText.classList.add('hidden');
+            showNormalizingDetailsBtn.textContent = 'Show Details';
+            showNormalizingDetailsBtn.classList.remove('hidden'); // Ensure button is shown
+        } else {
+            normalizingDifferenceSection.classList.add('hidden');
+            showNormalizingDetailsBtn.classList.add('hidden'); // Hide the button if not normalizing
+        }
 
         Object.values(processButtons).forEach(btn => btn.classList.remove('active'));
         processButtons[processKey].classList.add('active');
@@ -778,12 +823,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         ticks: {
                             backdropColor: 'rgba(0,0,0,0)',
                             stepSize: 1,
-                            max: 10, // Changed from 5 to 10
+                            max: 10, // Max value for the 1-10 scale
                             min: 0,
                             display: false,
                         },
                          suggestedMin: 0,
-                         suggestedMax: 10 // Changed from 5 to 10
+                         suggestedMax: 10 // Suggested max for the 1-10 scale
                     }
                 },
                 plugins: {
@@ -807,6 +852,22 @@ document.addEventListener('DOMContentLoaded', () => {
             updateProcessView(e.target.dataset.process);
         }
     });
+
+    // Event listener for the "Show Details" button within normalizing differences
+    showNormalizingDetailsBtn.addEventListener('click', () => {
+        const selectedProcessKey = 'normalizing'; // We know it's for normalizing
+        const process = appData.processes[selectedProcessKey];
+
+        if (normalizingDetailsText.classList.contains('hidden')) {
+            normalizingDetailsText.innerHTML = process.differenceDetails;
+            normalizingDetailsText.classList.remove('hidden');
+            showNormalizingDetailsBtn.textContent = 'Hide Details';
+        } else {
+            normalizingDetailsText.classList.add('hidden');
+            showNormalizingDetailsBtn.textContent = 'Show Details';
+        }
+    });
+
 
     // --- Alloys Section ---
     const alloySelector = document.getElementById('alloy-selector');
@@ -951,3 +1012,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
