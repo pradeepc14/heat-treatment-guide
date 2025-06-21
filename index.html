@@ -384,7 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in low hardness and high ductility.",
                     "<strong>Low</strong> risk of distortion; can be done before final machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [1, 1, 5, 4, 5] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 2, 10, 8, 10] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 6] } // Before (scaled from 1-5 to 1-10)
             },
             normalizing: {
                 title: 'Normalizing',
@@ -402,7 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in higher strength than annealed state.",
                     "<strong>Moderate</strong> risk of distortion."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 3, 4, 4, 4] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 6, 8, 8, 8] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 4] } // Before (scaled from 1-5 to 1-10)
             },
             hardening: {
                 title: 'Hardening (Quenching)',
@@ -420,7 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Results in very high hardness and brittleness.",
                     "<strong>High</strong> risk of distortion and cracking; must be followed by tempering."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [5, 5, 1, 1, 1] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [10, 10, 2, 2, 2] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [6, 6, 6, 6, 6] } // Before (scaled from 1-5 to 1-10)
             },
             tempering: {
                 title: 'Tempering',
@@ -438,7 +441,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Decreases hardness, increases toughness.",
                     "Improves dimensional stability; done <strong>before</strong> final machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 3, 4, 5] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [8, 8, 6, 8, 10] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [10, 10, 2, 2, 2] } // Before (scaled from 1-5 to 1-10)
             },
             age_hardening: {
                 title: 'Age Hardening',
@@ -456,7 +460,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Provides very high strength-to-weight ratios.",
                     "Distortion can occur during quench; aging helps relieve stress."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 5, 2, 3, 3] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [8, 10, 4, 6, 6] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 8, 8, 6] } // Before (scaled from 1-5 to 1-10)
             },
              stress_relieving: {
                 title: 'Stress Relieving',
@@ -474,7 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     "Primary goal is dimensional stability.",
                     "Ideal for complex parts before final, tight-tolerance machining."
                 ],
-                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [2, 2, 3, 3, 5] }
+                properties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 6, 6, 10] }, // After (scaled from 1-5 to 1-10)
+                beforeProperties: { labels: ['Hardness', 'Strength', 'Ductility', 'Toughness', 'Stress Relief'], values: [4, 4, 6, 6, 2] } // Before (scaled from 1-5 to 1-10)
             }
         },
         alloys: {
@@ -732,18 +738,31 @@ document.addEventListener('DOMContentLoaded', () => {
         processChartInstance = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: process.properties.labels,
-                datasets: [{
-                    label: process.title,
-                    data: process.properties.values,
-                    fill: true,
-                    backgroundColor: 'rgba(20, 184, 166, 0.2)',
-                    borderColor: 'rgb(20, 184, 166)',
-                    pointBackgroundColor: 'rgb(20, 184, 166)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(20, 184, 166)'
-                }]
+                labels: process.properties.labels, // Labels are the same for before and after
+                datasets: [
+                    {
+                        label: 'Before Treatment',
+                        data: process.beforeProperties.values,
+                        fill: true,
+                        backgroundColor: 'rgba(100, 116, 139, 0.2)', // slate-500 with transparency
+                        borderColor: 'rgb(100, 116, 139)', // slate-500
+                        pointBackgroundColor: 'rgb(100, 116, 139)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(100, 116, 139)'
+                    },
+                    {
+                        label: 'After Treatment',
+                        data: process.properties.values,
+                        fill: true,
+                        backgroundColor: 'rgba(20, 184, 166, 0.2)', // teal-500 with transparency
+                        borderColor: 'rgb(20, 184, 166)', // teal-500
+                        pointBackgroundColor: 'rgb(20, 184, 166)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(20, 184, 166)'
+                    }
+                ]
             },
             options: {
                 responsive: true,
@@ -759,17 +778,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         ticks: {
                             backdropColor: 'rgba(0,0,0,0)',
                             stepSize: 1,
-                            max: 5,
+                            max: 10, // Changed from 5 to 10
                             min: 0,
                             display: false,
                         },
                          suggestedMin: 0,
-                         suggestedMax: 5
+                         suggestedMax: 10 // Changed from 5 to 10
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: true, // Set to true to show legends
+                        position: 'top',
+                        labels: {
+                            color: '#475569', // slate-600
+                            font: {
+                                size: 14
+                            }
+                        }
                     }
                 }
             }
